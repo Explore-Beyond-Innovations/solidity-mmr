@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.17;
 
+import "@poseidon2/src/Poseidon2Lib.sol";
+import "@poseidon2/src/Field.sol";
 import "./StatelessMmrHelpers.sol";
 
 ///    _____       _ _     _ _ _           __  __ __  __ _____
@@ -169,7 +171,8 @@ library StatelessMmr {
     ///
     function computeRoot(bytes32[] memory peaks, bytes32 size) internal pure returns (bytes32) {
         bytes32 baggedPeaks = bagPeaks(peaks);
-        return keccak256(abi.encode(size, baggedPeaks));
+
+        return Field.toBytes32(Poseidon2Lib.hash_2(Field.toField(size), Field.toField(baggedPeaks)));
     }
 
     ///
@@ -186,7 +189,8 @@ library StatelessMmr {
         }
 
         uint256 len = peaks.length;
-        bytes32 root0 = keccak256(abi.encode(peaks[len - 2], peaks[len - 1]));
+        bytes32 root0 =
+            Field.toBytes32(Poseidon2Lib.hash_2(Field.toField(peaks[len - 2]), Field.toField(peaks[len - 1])));
         bytes32[] memory reversedPeaks = new bytes32[](len - 2);
         for (uint256 i = 0; i < len - 2; i++) {
             reversedPeaks[i] = peaks[len - 3 - i];
@@ -194,7 +198,7 @@ library StatelessMmr {
 
         bytes32 bags = root0;
         for (uint256 i = 0; i < reversedPeaks.length; i++) {
-            bags = keccak256(abi.encode(reversedPeaks[i], bags));
+            bags = Field.toBytes32(Poseidon2Lib.hash_2(Field.toField(reversedPeaks[i]), Field.toField(bags)));
         }
         return bags;
     }
@@ -207,7 +211,7 @@ library StatelessMmr {
         uint256 elementsCount = lastElementsCount + 1;
         if (lastElementsCount == 0) {
             bytes32 root0 = elem;
-            bytes32 firstRoot = keccak256(abi.encode(uint256(1), root0));
+            bytes32 firstRoot = Field.toBytes32(Poseidon2Lib.hash_2(Field.toField(uint256(1)), Field.toField(root0)));
             bytes32[] memory newPeaks = new bytes32[](1);
             newPeaks[0] = root0;
             return (elementsCount, firstRoot, newPeaks);
@@ -240,7 +244,7 @@ library StatelessMmr {
         bytes32 accHash = peaks[peaksLen - 1];
         for (uint256 i = 0; i < noMerges; i++) {
             bytes32 hash = peaks[peaksLen - i - 2];
-            accHash = keccak256(abi.encode(hash, accHash));
+            accHash = Field.toBytes32(Poseidon2Lib.hash_2(Field.toField(hash), Field.toField(accHash)));
         }
         bytes32[] memory newPeaks = new bytes32[](peaksLen - noMerges);
         for (uint256 i = 0; i < peaksLen - noMerges - 1; i++) {
@@ -262,12 +266,15 @@ library StatelessMmr {
 
             bool isRightChild = leafIndex % 2 == 1;
             if (isRightChild) {
-                bytes32 hashed = keccak256(abi.encode(currentSibling, hash));
+                bytes32 hashed =
+                    Field.toBytes32(Poseidon2Lib.hash_2(Field.toField(currentSibling), Field.toField(hash)));
                 elementsCount += 1;
 
                 hash = hashed;
             } else {
-                bytes32 hashed = keccak256(abi.encode(hash, currentSibling));
+                bytes32 hashed =
+                    Field.toBytes32(Poseidon2Lib.hash_2(Field.toField(hash), Field.toField(currentSibling)));
+
                 elementsCount += 2 << height;
 
                 hash = hashed;

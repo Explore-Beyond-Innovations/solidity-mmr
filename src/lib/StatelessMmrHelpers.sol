@@ -3,15 +3,15 @@ pragma solidity ^0.8.17;
 
 library StatelessMmrHelpers {
     // Returns the height of a given `index`. The height of the root is 0
-    function getHeight(uint index) internal pure returns (uint) {
+    function getHeight(uint256 index) internal pure returns (uint256) {
         require(index >= 1, "index must be at least 1");
 
-        uint bits = bitLength(index);
-        uint ones = allOnes(bits);
+        uint256 bits = bitLength(index);
+        uint256 ones = allOnes(bits);
 
         if (index != ones) {
-            uint shifted = 1 << (bits - 1);
-            uint recHeight = getHeight(index - (shifted - 1));
+            uint256 shifted = 1 << (bits - 1);
+            uint256 recHeight = getHeight(index - (shifted - 1));
             return recHeight;
         }
 
@@ -60,7 +60,7 @@ library StatelessMmrHelpers {
     function mmrSizeToLeafCount(uint256 mmrSize) internal pure returns (uint256) {
         uint256 leafCount = 0;
         uint256 mountainLeafCount = 1 << bitLength(mmrSize);
-        for(; mountainLeafCount > 0; mountainLeafCount /= 2) {
+        for (; mountainLeafCount > 0; mountainLeafCount /= 2) {
             uint256 mountainSize = 2 * mountainLeafCount - 1;
             if (mountainSize <= mmrSize) {
                 leafCount += mountainLeafCount;
@@ -78,7 +78,7 @@ library StatelessMmrHelpers {
 
     function leafCountToAppendNoMerges(uint256 leafCount) internal pure returns (uint256) {
         uint256 count = 0;
-        while(leafCount > 0 && (leafCount & 1) == 1) {
+        while (leafCount > 0 && (leafCount & 1) == 1) {
             count += 1;
             leafCount /= 2;
         }
@@ -86,12 +86,9 @@ library StatelessMmrHelpers {
     }
 
     // Creates a new array from source and returns a new one containing all previous elements + `elem`
-    function newArrWithElem(
-        bytes32[] memory sourceArr,
-        bytes32 elem
-    ) internal pure returns (bytes32[] memory) {
+    function newArrWithElem(bytes32[] memory sourceArr, bytes32 elem) internal pure returns (bytes32[] memory) {
         bytes32[] memory outputArray = new bytes32[](sourceArr.length + 1);
-        uint i = 0;
+        uint256 i = 0;
         for (; i < sourceArr.length; i++) {
             outputArray[i] = sourceArr[i];
         }
@@ -100,11 +97,8 @@ library StatelessMmrHelpers {
     }
 
     // Returns true if `elem` is in `arr`
-    function arrayContains(
-        bytes32 elem,
-        bytes32[] memory arr
-    ) internal pure returns (bool) {
-        for (uint i = 0; i < arr.length; ++i) {
+    function arrayContains(bytes32 elem, bytes32[] memory arr) internal pure returns (bool) {
+        for (uint256 i = 0; i < arr.length; ++i) {
             if (arr[i] == elem) {
                 return true;
             }

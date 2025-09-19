@@ -8,14 +8,14 @@ interface MMRTree {
 
     function getRootHash() external view returns (bytes32);
 
-    function getElementsCount() external view returns (uint);
+    function getElementsCount() external view returns (uint256);
 
     function verifyProof(
-        uint index,
+        uint256 index,
         bytes32 value,
         bytes32[] memory proof,
         bytes32[] memory peaks,
-        uint elementsCount,
+        uint256 elementsCount,
         bytes32 root
     ) external view;
 }
