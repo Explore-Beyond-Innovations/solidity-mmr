@@ -6,4 +6,4 @@ ffi = true
 solc = "0.8.19"
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
-remappings = [" @poseidon2/=lib/poseidon2-evm/"]
+remappings = ["@poseidon2/=lib/poseidon2-evm/"]

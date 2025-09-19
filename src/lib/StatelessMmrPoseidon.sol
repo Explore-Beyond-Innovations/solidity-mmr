@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.17;
 
-import "@poseidon2/src/Poseidon2Lib.sol";
-import "@poseidon2/src/Field.sol";
-import "./StatelessMmrHelpers.sol";
+import {Poseidon2Lib} from "@poseidon2/src/Poseidon2Lib.sol";
+import {Field} from "@poseidon2/src/Field.sol";
+import {StatelessMmrHelpers} from "./StatelessMmrHelpers.sol";
 
 ///    _____       _ _     _ _ _           __  __ __  __ _____
 ///   / ____|     | (_)   | (_) |         |  \/  |  \/  |  __ \
@@ -20,7 +20,7 @@ import "./StatelessMmrHelpers.sol";
 /// @notice Library for appending bytes32 values (i.e., acting as an accumulator)
 ///         and verifying Merkle inclusion proofs
 ///
-library StatelessMmr {
+library StatelessMmrPoseidon {
     error InvalidProof();
     error IndexOutOfBounds();
     error InvalidRoot();
